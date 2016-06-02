@@ -3,7 +3,7 @@ function output = metadynamics(SDE,meta,domain,plots)
 %A function to simulate metadynamics of the stochastic differential
 %equation
 %
-%dX = f(X)dt + sigma(X)dB_t
+%dX = f(X)dt + sigma*dB_t
 %
 %with initial condition X_0
 %
@@ -16,7 +16,7 @@ function output = metadynamics(SDE,meta,domain,plots)
 %
 %SDE.drift      =  a function handle for the drift term f(X) in the SDE
 %SDE.potential  =  a function handle for the potential U(X) of the drift
-%SDE.noise      =  a function handle for the noise level sigma(X)
+%SDE.noise      =  the fixed noise level sigma
 %SDE.initial    =  the initial condition
 %
 %
@@ -34,9 +34,6 @@ function output = metadynamics(SDE,meta,domain,plots)
 %
 %domain.dt         =  the time step
 %domain.endtime    =  the end time
-%domain.periodic   =  a logical variable that is 1 if the spatial domain is
-%                     periodic and 0 otherwise
-%domain.endpoints  =  the left and right endpoints of a periodic domain
 %
 %
 %plots: a structure detailing plotting parameters
@@ -51,12 +48,13 @@ function output = metadynamics(SDE,meta,domain,plots)
 %Output:%
 %%%%%%%%%
 %
-%output.path       =  a vector of path taken by the particle during the 
+%output.path       =  a vector of the path taken by the particle during the 
 %                     simulation
 %output.locations  =  a vector of the locations at which gaussians were
 %                     deposited
 %output.weights    =  a vector of the weights assigned to each gaussian if
-%                     well-tempered metadynamics were used
+%                     well-tempered metadynamics were used (only appears in
+%                     well-tempered simulations)
 
 
 %physical parameter: Boltzmann's constant
@@ -97,8 +95,7 @@ end
 %initialize plotting data if plotting
 if show==1
     figure
-    xgrid = linspace(plot_axes(1),plot_axes(2),resolution);
-    xgrid = xgrid.';
+    xgrid = linspace(plot_axes(1),plot_axes(2),resolution).';
 end
 
 %initialize particle
@@ -113,31 +110,37 @@ meta_index    =  1;
 f  =  f_0;
 U  =  U_0;
 
-
+%simulate the path
 for i=1:T/dt
+    
+    %advance using Langevin dynamics
     x(i+1) = x(i) + f(x(i))*dt + sigma*sqrt(dt)*randn;
     
+    %if a gaussian is to be deposited, do so
     if mod(i,freq) == 0
+        
+        %record location of deposit
         deposit_list(meta_index) = x(i+1);
         
+        %record weight of deposit
         if tempered==1
             weight_list(meta_index)  =  w*exp(-U_mod(x(i+1))/(kB*dTemp));
-        else
-            weight_list(meta_index)  =  w;
         end
 
-            
+        %update bias potential and drift
         f_mod = @(y) -gaussian_deriv(y,deposit_list(1:meta_index),width*ones(meta_index,1),weight_list(1:meta_index));
         U_mod = @(y) gaussian(y,deposit_list(1:meta_index),width*ones(meta_index,1),weight_list(1:meta_index));
         
-        
+        %update potential and drift to include new bias
         f = @(y) f_0(y) + f_mod(y);
         U = @(y) U_0(y) + U_mod(y);
         
-        
+        %update the index
         meta_index = meta_index + 1;
     end
     
+    %if plotting, display underlying potential in blue, biased potential in
+    %red, and the position of the particle
     if show==1
         plot(xgrid,U(xgrid),'r')
         hold on
@@ -150,6 +153,7 @@ for i=1:T/dt
     end
 end
 
+%save results
 output.path       =  x;
 output.locations  =  deposit_list;
 

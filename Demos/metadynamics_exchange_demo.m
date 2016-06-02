@@ -100,7 +100,7 @@ HMC_params.T  = 1;
 
 plots_cond.show = 0;  %1 if plots should be generated during simulation, 0 otherwise
 plots_cond.subplot_dim = [2,2];  %dimensions of subplot array
-plots.num_plotted  =  10;  %number of plots highlighted at end
+plots_cond.num_plotted  =  10;  %number of plots highlighted at end
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -120,22 +120,24 @@ output = conditional_path_parallel(SDE,drifts,cond,domain_cond,HMC_params,plots_
 %compute the number of lag times we can compute with our Fourier method
 nLags = (cond.samples-cond.burn)/2;
 
-
+%plot paths, highlight a fraction of them
 paths_direct=figure(1);
-plot(0:domain.dt:domain.endtime,output.paths)
+plot(0:domain_cond.dt:domain_cond.endtime,squeeze(output.paths(:,end,:)))
 hold on
-plot(0:domain.dt:domain.endtime,output.paths(:,cond.samples/plots.num_plotted:cond.samples/plots.num_plotted:end),'k-','LineWidth',2)
+plot(0:domain_cond.dt:domain_cond.endtime,squeeze(output.paths(:,end,cond.samples/plots_cond.num_plotted:cond.samples/plots_cond.num_plotted:end)),'k-','LineWidth',2)
 title('Sampled Paths','FontSize',16)
 axis([0,1,-2,2])
 
+%heuristically plot the time of transition for each path
 trans_times_direct=figure(2);
-[m,n]=size(output.paths);
-plot(1:n,sum(output.paths<0)/m)
+[m,n]=size(squeeze(output.paths(:,end,:)));
+plot(1:n,sum(squeeze(output.paths(:,end,:))<0)/m)
 title('Transition Times','FontSize',16)
 axis([1,n,0,1])
 
+%compute and plot autocorrelations
 autocorr=figure(3);
-correlates = autocorrelation(output.paths);
+correlates = autocorrelation(squeeze(output.paths(:,end,:)));
 plot(0:nLags-1,correlates(:,1:nLags))
 title('Autocorrelation Function (all times)','FontSize',16)
 axis([0,nLags-1,-1,1])
@@ -143,4 +145,4 @@ axis([0,nLags-1,-1,1])
 %save plots
 saveas(paths_direct,'paths_direct.png')
 saveas(trans_times_direct,'trans_times_direct.png')
-saveas(autocorr,'autocorrelation_direct_all.png')
+saveas(autocorr,'autocorr.png')
