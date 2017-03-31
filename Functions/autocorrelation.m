@@ -7,8 +7,8 @@ function ACF = autocorrelation(data)
 %INPUT%
 %%%%%%%
 %
-%data      =  a matrix of the data - we compute the autocorrelation of each
-%             row in the matrix
+%data  =  a matrix of the data - we compute the autocorrelation of each
+%         row in the matrix
 
 %compute the number of samples
 [~,n] = size(data);

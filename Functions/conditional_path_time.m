@@ -4,7 +4,7 @@ function output = conditional_path_time(SDE,drifts,cond,domain,HMC_params,plots)
 %
 %dX = f_i(X)dt + sigma(X)dB_t
 %
-%with initial distribituion g(X_0) and end distribution h(X_T), utilizing 
+%with initial distribituion g(X_0) and end distribution h(X_T), utilizing
 %path exchanges between paths of different resolutions (powers of two)
 %
 %
@@ -31,18 +31,18 @@ function output = conditional_path_time(SDE,drifts,cond,domain,HMC_params,plots)
 %cond.implicit         =  logical variable indicating whether to use the
 %                         implicit integration scheme (cond.implicit = 1)
 %                         or the explicit scheme (cond.implicit = 0)
-%cond.start_d_neg_log  =  negative logarithm of the starting distribution 
+%cond.start_d_neg_log  =  negative logarithm of the starting distribution
 %                         (function handle)
 %cond.start_d_neg_log  =  the derivative of the above (function handle)
-%cond.initial_pos      =  a vector of initial conditions drawn a priori 
-%                         from the initial distribution (one for each drift 
+%cond.initial_pos      =  a vector of initial conditions drawn a priori
+%                         from the initial distribution (one for each drift
 %                         level)
-%cond.end_neg_log      =  negative logarithm of the ending distribution 
+%cond.end_neg_log      =  negative logarithm of the ending distribution
 %                         (function handle)
 %cond.end_d_neg_log    =  the derivative of the above (function handle)
 %cond.samples          =  the number of samples to take at each level
 %cond.gap              =  how frequently to save results after the burn
-%                         period (the number of unsaved paths between saved 
+%                         period (the number of unsaved paths between saved
 %                         paths, to save all set to zero)
 %cond.burn             =  the number of samples at the start of the
 %                         simulation to disregard
@@ -261,15 +261,19 @@ for i=1:samples
         %if plotting, display paths for each resolution
         if show==1
             
-            for j=1:dt_num_lev
+            if k ~=1
                 
-                subplot(subplot_dim(1),subplot_dim(2),j)
-                hold all
-                plot(t{j},paths{j}(:,k-1))
+                for j=1:dt_num_lev
+                    
+                    subplot(subplot_dim(1),subplot_dim(2),j)
+                    hold all
+                    plot(t{j},paths{j}(:,k-1))
+                    
+                end
+                
+                drawnow
                 
             end
-            
-            drawnow
             
         end
         

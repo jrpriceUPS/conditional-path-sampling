@@ -79,7 +79,6 @@ df   =  drifts.df;
 %load information about the conditional start and end points
 start_obs_potential    =  cond.start_neg_log;
 start_obs_d_potential  =  cond.start_d_neg_log;
-X0                     =  cond.initial_pos;
 end_obs_potential      =  cond.end_neg_log;
 end_obs_d_potential    =  cond.end_d_neg_log;
 

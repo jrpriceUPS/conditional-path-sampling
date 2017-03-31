@@ -34,7 +34,7 @@ meta.temp      =  1000/kB;   %temperature of system (for well-tempered)
 domain_meta.dt        =  0.01;  %timestep
 domain_meta.endtime   =  2;     %end time
 
-plots_meta.show        =  0;                                %logical variable (1 if metadynamics should be plotted, 0 otherwise)
+plots_meta.show        =  1;                                %logical variable (1 if metadynamics should be plotted, 0 otherwise)
 plots_meta.axes        =  [-2,2,-SDE.depth,SDE.depth*3/2];  %axes of metadynamics
 plots_meta.resolution  =  1000;                             %x-axis resolution of metadynamics
 

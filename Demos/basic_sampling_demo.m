@@ -82,7 +82,7 @@ HMC_params.T  = 1;
 %%%%%%%%%%%%%%%%%%%%%
 
 %1 if plots should be generated, 0 otherwise
-plots.show         =  0;   %1 if plots should be generated during simulation, 0 otherwise
+plots.show         =  1;   %1 if plots should be generated during simulation, 0 otherwise
 plots.num_plotted  =  10;  %number of plots highlighted at end
 
 
@@ -127,6 +127,6 @@ title('Autocorrelation Function (all times)','FontSize',16)
 axis([0,nLags-1,-1,1])
 
 %save plots
-saveas(paths_direct,'paths_direct.png')
-saveas(trans_times_direct,'trans_times_direct.png')
-saveas(autocorr,'autocorrelation_direct_all.png')
+%saveas(paths_direct,'paths_direct.png')
+%saveas(trans_times_direct,'trans_times_direct.png')
+%saveas(autocorr,'autocorrelation_direct_all.png')
