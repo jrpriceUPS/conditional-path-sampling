@@ -1,0 +1,31 @@
+[33mcommit 701970a9c45fe53cdc4151b189b46541a7c5d308[m
+Author: Jesse Rivera <jir682@uw.edu>
+Date:   Thu Apr 6 10:34:20 2017 -0700
+
+    Added text to new_file.txt
+
+[33mcommit 61e5a773647d3db48a3005b992d95a985919a028[m
+Author: Jesse Rivera <jir682@uw.edu>
+Date:   Thu Apr 6 10:30:32 2017 -0700
+
+    Added new_file.txt
+
+[33mcommit 683d028a029be308d84700cb6643ecb6e0e1351b[m
+Author: Jake Price <jrp14@uw.edu>
+Date:   Fri Mar 31 13:59:40 2017 -0700
+
+    WXML commit
+    
+    Updating to latest version for WXML Spring 2017 class.
+
+[33mcommit 616a2254871f09479079522e6564130ac95edb2c[m
+Author: Jake Price <jrp14@uw.edu>
+Date:   Thu Jun 2 12:29:47 2016 -0700
+
+    comments on metadynamics functions
+
+[33mcommit a3e9003e3f3f7957ce52b90aae9a377d986c386e[m
+Author: Jake Price <jrp14@uw.edu>
+Date:   Thu Jun 2 10:59:21 2016 -0700
+
+    initial commit
