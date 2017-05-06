@@ -109,10 +109,13 @@ nLags = (cond.samples-cond.burn)/2;
 
 paths_direct=figure(1);
 plot(0:domain.dt:domain.endtime,output.paths)
-hold on
-plot(0:domain.dt:domain.endtime,output.paths(:,cond.samples/plots.num_plotted:cond.samples/plots.num_plotted:end),'k-','LineWidth',2)
-title('Sampled Paths','FontSize',16)
-axis([0,1,-2,2])
+
+if plots.num_plotted ~= 0
+    hold on
+    plot(0:domain.dt:domain.endtime,output.paths(:,end:-1*ceil((cond.samples - cond.burn)/plots.num_plotted):1),'k-','LineWidth',2)
+    title('Sampled Paths','FontSize',16)
+    axis([0,1,-2,2])
+end
 
 trans_times_direct=figure(2);
 [m,n]=size(output.paths);
