@@ -52,7 +52,7 @@ function output = conditional_path(SDE,drifts,cond,domain,HMC_params,plots)
 %HMC_params: a structure containing hybrid Monte Carlo parameters
 %
 %HMC_params.dt  =  the time step in the HMC
-%HMC_params.T   =  the end time of each HMC simulation
+%HMC_params.L   =  the number of time steps in the HMC
 %
 %
 %plots: a structure detailing plotting parameters
@@ -94,7 +94,7 @@ X0  =  cond.initial_pos;
 
 %load information about the hybrid monte carlo step
 dt_HMC  =  HMC_params.dt;
-T_HMC   =  HMC_params.T;
+L_HMC   =  HMC_params.L;
 
 %load information about plotting
 show  =  plots.show;
@@ -104,9 +104,6 @@ t=0:dt:T;
 
 %initialize acceptance rate
 accept_rate = 0;
-
-%compute the number of HMC steps to take
-L_HMC = T_HMC/dt_HMC;
 
 %compute paths that should be kept (according to gap) and initialize
 %counter

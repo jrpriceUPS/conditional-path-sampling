@@ -42,7 +42,7 @@ domain.endtime  =  1;      %end of simulation
 
 %mean and standard deviation of initial and final observation gaussians
 cond.mean = [-1,1];  %start in left well, end in right
-cond.std  = [.1,.1]; %tight distributions on each end
+cond.std  = [.01,.01]; %tight distributions on each end
 
 %functions relating to the potentials of initial and final observations
 cond.start_neg_log    =  @(x) (x-cond.mean(1))^2/(2*cond.std(1)^2);
@@ -72,8 +72,8 @@ cond.burn = 10;
 %time step of HMC
 HMC_params.dt = 0.005;
 
-%end time of HMC
-HMC_params.T  = 1;
+%number of time steps of HMC
+HMC_params.L  = 200;
 
 
 
@@ -82,7 +82,7 @@ HMC_params.T  = 1;
 %%%%%%%%%%%%%%%%%%%%%
 
 %1 if plots should be generated, 0 otherwise
-plots.show         =  1;   %1 if plots should be generated during simulation, 0 otherwise
+plots.show         =  0;   %1 if plots should be generated during simulation, 0 otherwise
 plots.num_plotted  =  10;  %number of plots highlighted at end
 
 
