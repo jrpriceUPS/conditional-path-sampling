@@ -6,7 +6,7 @@ addpath('../Functions')
 %%%%%%%%%%%%%%%%
 
 %degree of Brownian noise
-SDE.noise = 1/2;
+SDE.noise = 1;
 
 
 
@@ -31,7 +31,7 @@ drifts.df = df;
 %%%%%%%%%%%%%%%%%%%
 
 %time step
-domain.dt       =  2^-10;  %timestep
+domain.dt       =  2^-7;  %timestep
 domain.endtime  =  1;      %end of simulation
 
 

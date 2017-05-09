@@ -86,7 +86,7 @@ HMC_params.T  = 1;
 %Plotting parameters%
 %%%%%%%%%%%%%%%%%%%%%
 
-plots.show         = 0;      %1 if plots should be generated during simulation, 0 otherwise
+plots.show         = 1;      %1 if plots should be generated during simulation, 0 otherwise
 plots.subplot_dim  = [2,2];  %dimensions of subplot array
 plots.num_plotted  =  10;    %number of plots highlighted at end
 
