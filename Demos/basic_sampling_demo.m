@@ -1,4 +1,4 @@
-clear all;close all;
+clear all; close all; clc
 addpath('../Functions')
 
 %%%%%%%%%%%%%%%%
@@ -6,7 +6,7 @@ addpath('../Functions')
 %%%%%%%%%%%%%%%%
 
 %degree of Brownian noise
-SDE.noise = 1;
+SDE.noise = 1/2;
 
 
 
@@ -31,7 +31,7 @@ drifts.df = df;
 %%%%%%%%%%%%%%%%%%%
 
 %time step
-domain.dt       =  2^-7;  %timestep
+domain.dt       =  2^-7;  %timestep (resolution)
 domain.endtime  =  1;      %end of simulation
 
 
@@ -70,10 +70,19 @@ cond.burn = 10;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %time step of HMC
-HMC_params.dt = 0.005;
+
+HMC_params.dt = 0; %set to 0 for it to be automatically calculated
+
+if ~HMC_params.dt
+    if domain.dt > 1/500
+        HMC_params.dt = .2269*(domain.dt^.5434);
+    else
+        HMC_params.dt = .4632*(domain.dt^.6758);
+    end
+end
 
 %number of time steps of HMC
-HMC_params.L  = 200;
+HMC_params.L  = round(4.75/HMC_params.dt);
 
 
 
@@ -82,7 +91,8 @@ HMC_params.L  = 200;
 %%%%%%%%%%%%%%%%%%%%%
 
 %1 if plots should be generated, 0 otherwise
-plots.show         =  0;   %1 if plots should be generated during simulation, 0 otherwise
+plots.show         =  1;   %1 if plots should be generated during simulation, 0 otherwise
+plots.print_ratio  =  1;   %1 if acceptance rate should be printed after each step
 plots.num_plotted  =  10;  %number of plots highlighted at end
 
 
@@ -95,7 +105,7 @@ plots.num_plotted  =  10;  %number of plots highlighted at end
 
 
 output = conditional_path(SDE,drifts,cond,domain,HMC_params,plots);
-
+output.accept_rate
 
 
 
@@ -109,13 +119,14 @@ nLags = (cond.samples-cond.burn)/2;
 
 paths_direct=figure(1);
 plot(0:domain.dt:domain.endtime,output.paths)
+hold on
 
-if plots.num_plotted ~= 0
-    hold on
+if plots.num_plotted
     plot(0:domain.dt:domain.endtime,output.paths(:,end:-1*ceil((cond.samples - cond.burn)/plots.num_plotted):1),'k-','LineWidth',2)
-    title('Sampled Paths','FontSize',16)
-    axis([0,1,-2,2])
 end
+
+title('Sampled Paths','FontSize',16)
+axis([0,1,-2,2])
 
 trans_times_direct=figure(2);
 [m,n]=size(output.paths);
@@ -133,3 +144,16 @@ axis([0,nLags-1,-1,1])
 %saveas(paths_direct,'paths_direct.png')
 %saveas(trans_times_direct,'trans_times_direct.png')
 %saveas(autocorr,'autocorrelation_direct_all.png')
+
+%save animation to gif
+% figure,
+% f = getframe;
+% [im,map] = rgb2ind(f.cdata,256,'nodither');
+% 
+% for k=1:cond.samples - cond.burn,
+%     plot(0:domain.dt:domain.endtime,output.paths(:,1:k),'-');
+%     f=getframe;
+%     im(:,:,1,k) = rgb2ind(f.cdata,map,'nodither');
+% end
+% 
+% imwrite(im,map,'pathsAnimation.gif','DelayTime',0,'LoopCount',inf);

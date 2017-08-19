@@ -50,7 +50,7 @@ function output = conditional_path_time(SDE,drifts,cond,domain,HMC_params,plots)
 %
 %domain: a structure detailing the domain of simulation
 %
-%domain.dt_num_lev  =  number of levels of resolution
+%domain.length(dt)  =  number of levels of resolution
 %domain.dt          =  the time step of the highest resolution
 %domain.endtime     =  the end time
 %
@@ -105,38 +105,34 @@ gap      =  cond.gap;
 burn     =  cond.burn;
 
 %load information about the domain of simulation
-dt_max_res  =  domain.dt_max_res;
-dt_num_lev  =  domain.dt_num_lev;
 T           =  domain.endtime;
+
+%initialize timesteps (resolutions)
+dt = domain.dt;
 
 %load information about the hybrid monte carlo step
 dt_HMC  =  HMC_params.dt;
-T_HMC   =  HMC_params.T;
+L_HMC   =  HMC_params.L;
 
 %load information about plotting
+print_ratio  =  plots.print_ratio;
 show         =  plots.show;
 if show==1
     subplot_dim  =  plots.subplot_dim;
 end;
 
-%initialize timesteps
-dt = 2.^(dt_num_lev-(1:dt_num_lev)+dt_max_res);
-
 %initialize the time domain
-t = cell(dt_num_lev,1);
+t = cell(length(dt),1);
 
-for i=1:dt_num_lev
+for i=1:length(dt)
     
     t{i}=0:dt(i):T;
     
 end
 
 %initialize acceptance rates
-accept_rate_HMC   =  zeros(dt_num_lev,1);
-accept_rate_swap  =  zeros(dt_num_lev-1,2);
-
-%compute the number of HMC steps to take
-L_HMC = T_HMC/dt_HMC;
+accept_rate_HMC   =  zeros(length(dt),1);
+accept_rate_swap  =  zeros(length(dt)-1,2);
 
 %compute paths that should be kept (according to gap) and initialize
 %counter
@@ -144,9 +140,9 @@ indices = burn+1:gap+1:samples;
 k = 1;
 
 %initialize the output containing the paths
-paths = cell(1,dt_num_lev);
+paths = cell(1,length(dt));
 
-for i=1:dt_num_lev
+for i=1:length(dt)
     
     paths{i} = zeros(length(t{i}),length(indices));
     
@@ -159,10 +155,10 @@ if isfield(SDE,'initial_path')
     
 else
     
-    initial_path     =  cell(dt_num_lev,1);
+    initial_path     =  cell(length(dt),1);
     
     %compute initial paths with Langevin dynamics
-    for j=1:dt_num_lev
+    for j=1:length(dt)
         
         initial_path{j} = zeros(length(t{j}),1);
         initial_path{j}(1) = X0(j);
@@ -183,10 +179,10 @@ current_path = initial_path;
 
 %create cell array of potentials and gradient potentials (using correct
 %integration scheme)
-U   =  cell(1,dt_num_lev);
-dU  =  cell(1,dt_num_lev);
+U   =  cell(1,length(dt));
+dU  =  cell(1,length(dt));
 
-for i=1:dt_num_lev
+for i=1:length(dt)
     
     if cond.implicit==1
         
@@ -207,31 +203,37 @@ if show == 1
     
     figure
     
-    for i=1:dt_num_lev
+    for i=1:length(dt)
         subplot(subplot_dim(1),subplot_dim(2),i)
-        title(sprintf('Level = %g',i));
+        title(sprintf('Resolution = 2^{%g}', round(log2(dt(i)))));
     end
     
 end
 
-
+%stores the acceptance probability at each step
+percent_accepted = zeros(samples, length(dt));
 
 %take samples
 for i=1:samples
     
     %use hybrid Monte Carlo to propose and accept or reject new paths for
     %each resolution
-    for j=1:dt_num_lev
+    for j=1:length(dt)
         
-        [newpath,accept]  =  HMC(U{j},dU{j},0.4*dt_HMC,1.2*dt_HMC,L_HMC,current_path{j});
+        [newpath,accept]  =  HMC(U{j},dU{j},.99*dt_HMC(j),1.01*dt_HMC(j),L_HMC(j),current_path{j});
         current_path{j} = newpath;
         accept_rate_HMC(j) = accept_rate_HMC(j) + accept/samples;
+        percent_accepted(i,j) = accept_rate_HMC(j) * samples / i;
         
+    end
+    
+    if print_ratio
+        percent_accepted(i,:) %prints acceptance ratio at current step
     end
     
     
     %randomly select a path to swap with its nearest neighbor
-    swap = randi(dt_num_lev-1,1);
+    swap = randi(length(dt)-1,1);
     
     %record how many swaps were attempted at each level
     accept_rate_swap(swap,2) = accept_rate_swap(swap,2) + 1;
@@ -248,7 +250,7 @@ for i=1:samples
     %record paths
     if i == indices(k)
         
-        for n=1:dt_num_lev
+        for n=1:length(dt)
             paths{n}(:,k) = current_path{n};
         end
         k = k+1;
@@ -263,7 +265,7 @@ for i=1:samples
             
             if k ~=1
                 
-                for j=1:dt_num_lev
+                for j=1:length(dt)
                     
                     subplot(subplot_dim(1),subplot_dim(2),j)
                     hold all
@@ -286,3 +288,6 @@ end
 output.paths             =  paths;
 output.accept_rate_HMC   =  accept_rate_HMC;
 output.accept_rate_swap  =  accept_rate_swap(:,1)./accept_rate_swap(:,2);
+
+output.accept_rate_swap %prints the swap rate
+%idea: highlight the swapped paths? Keep track of which paths they were?

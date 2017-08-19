@@ -98,6 +98,7 @@ L_HMC   =  HMC_params.L;
 
 %load information about plotting
 show  =  plots.show;
+print_ratio = plots.print_ratio;
 
 %initialize the time domain
 t=0:dt:T;
@@ -139,12 +140,20 @@ current_path  =  initial_path;
 U = @(b) potential(b,start_obs_potential,end_obs_potential,f{1},sigma,dt);
 dU = @(b) grad_potential(b,start_obs_d_potential,end_obs_d_potential,f{1},df{1},sigma,dt);
 
+%stores the acceptance probability at each step
+percent_accepted = zeros(samples,1);
+
 %take samples
 for i=1:samples
     
-    [newpath,accept]  =  HMC(U,dU,0.4*dt_HMC,1.2*dt_HMC,L_HMC,current_path);
+    [newpath,accept]  =  HMC(U,dU,.99*dt_HMC,1.01*dt_HMC,L_HMC,current_path);
     current_path = newpath;
     accept_rate = accept_rate + accept/samples;
+    percent_accepted(i) = accept_rate * samples / i;
+    
+    if print_ratio
+        percent_accepted(i) %prints acceptance ratio at current step
+    end
     
     %record paths
     if i == indices(k)
@@ -176,3 +185,6 @@ end
 %save results
 output.paths        =  paths;
 output.accept_rate  =  accept_rate;
+
+save percent_accepted.dat percent_accepted -ascii %saves the acceptance ratio at each step
+% save paths.dat output.paths -ascii

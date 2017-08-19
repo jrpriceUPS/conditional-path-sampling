@@ -63,6 +63,16 @@ current_K = sum(current_p.^2)/2;
 proposed_U = U(q);
 proposed_K = sum(p.^2)/2;
 
+fileID = fopen('hamiltonian.txt','a');
+% s1 = 'current_U';
+% s2 = 'current_K';
+% s3 = 'proposed_U';
+% s4 = 'proposed_K';
+% s5 = 'rand';
+% s6 = 'H';
+fprintf(fileID,'%12.8f\r\n', current_U, current_K, proposed_U, proposed_K, rand, exp(current_U-proposed_U+current_K-proposed_K));
+fclose(fileID);
+
 %accept or reject the state at the end based on this
 if rand < exp(current_U-proposed_U+current_K-proposed_K)
     out = q; %accept
