@@ -67,7 +67,7 @@ initial_path(1,:)  =  X0;
     
 for i = 1:(T/dt)
         
-    initial_path(i+1,:) = initial_path(i,:) + f{1}(initial_path(i,:))*dt + sigma*sqrt(dt)*randn*ones(1,n);
+    initial_path(i+1,:) = initial_path(i,:) + f{1}(initial_path(i,:))*dt + sigma*sqrt(dt)*randn(1,n);
     
 end
 
