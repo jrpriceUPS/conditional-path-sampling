@@ -220,7 +220,7 @@ for i=1:samples
     %each resolution
     for j=1:length(dt)
         
-        [newpath,accept]  =  HMC(U{j},dU{j},.99*dt_HMC(j),1.01*dt_HMC(j),L_HMC(j),current_path{j});
+        [newpath,accept]  =  HMC(U{j},dU{j},.99*dt_HMC(j),1.01*dt_HMC(j),L_HMC(j),L_HMC(j),current_path{j});
         current_path{j} = newpath;
         accept_rate_HMC(j) = accept_rate_HMC(j) + accept/samples;
         percent_accepted(i,j) = accept_rate_HMC(j) * samples / i;
@@ -290,4 +290,3 @@ output.accept_rate_HMC   =  accept_rate_HMC;
 output.accept_rate_swap  =  accept_rate_swap(:,1)./accept_rate_swap(:,2);
 
 output.accept_rate_swap %prints the swap rate
-%idea: highlight the swapped paths? Keep track of which paths they were?

@@ -95,6 +95,8 @@ X0  =  cond.initial_pos;
 %load information about the hybrid monte carlo step
 dt_HMC  =  HMC_params.dt;
 L_HMC   =  HMC_params.L;
+rnd_dt  =  HMC_params.rnd_dt;
+rnd_L   =  HMC_params.rnd_L;
 
 %load information about plotting
 show  =  plots.show;
@@ -146,7 +148,7 @@ percent_accepted = zeros(samples,1);
 %take samples
 for i=1:samples
     
-    [newpath,accept]  =  HMC(U,dU,.99*dt_HMC,1.01*dt_HMC,L_HMC,current_path);
+    [newpath,accept]  =  HMC(U,dU,(1-rnd_dt)*dt_HMC,(1+rnd_dt)*dt_HMC,(1-rnd_L)*L_HMC, (1+rnd_L)*L_HMC,current_path);
     current_path = newpath;
     accept_rate = accept_rate + accept/samples;
     percent_accepted(i) = accept_rate * samples / i;
@@ -186,5 +188,5 @@ end
 output.paths        =  paths;
 output.accept_rate  =  accept_rate;
 
-save percent_accepted.dat percent_accepted -ascii %saves the acceptance ratio at each step
+% save percent_accepted.dat percent_accepted -ascii %saves the acceptance ratio at each step
 % save paths.dat output.paths -ascii

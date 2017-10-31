@@ -31,7 +31,7 @@ drifts.df = df;
 %%%%%%%%%%%%%%%%%%%
 
 %time step
-domain.dt       =  2^-7;  %timestep (resolution)
+domain.dt       =  2^-7;   %timestep (resolution)
 domain.endtime  =  1;      %end of simulation
 
 
@@ -71,8 +71,10 @@ cond.burn = 10;
 
 %time step of HMC
 
-HMC_params.dt = 0; %set to 0 for it to be automatically calculated
+HMC_params.dt = 0;        %set to 0 for it to be automatically calculated
+HMC_params.rnd_dt = 0.01; %amount of randomness in selecting HMC_params.dt (percentage)
 
+%piecewise power law
 if ~HMC_params.dt
     if domain.dt > 1/500
         HMC_params.dt = .2269*(domain.dt^.5434);
@@ -82,7 +84,12 @@ if ~HMC_params.dt
 end
 
 %number of time steps of HMC
-HMC_params.L  = round(4.75/HMC_params.dt);
+HMC_params.L  = 0;    %set to 0 for it to be automatically calculated
+HMC_params.rnd_L = 0; %amount of randomness in selecting HMC_params.L (percentage)
+
+if ~HMC_params.L
+    HMC_params.L  = round(5/HMC_params.dt);
+end
 
 
 
@@ -93,7 +100,7 @@ HMC_params.L  = round(4.75/HMC_params.dt);
 %1 if plots should be generated, 0 otherwise
 plots.show         =  1;   %1 if plots should be generated during simulation, 0 otherwise
 plots.print_ratio  =  1;   %1 if acceptance rate should be printed after each step
-plots.num_plotted  =  10;  %number of plots highlighted at end
+plots.num_plotted  =  0;   %number of plots highlighted at end
 
 
 

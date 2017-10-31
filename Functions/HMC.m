@@ -1,4 +1,4 @@
-function [out,accept] = HMC(U,grad_U,dt_min,dt_max,L,current_q)
+function [out,accept] = HMC(U,grad_U,dt_min,dt_max,L_min, L_max,current_q)
 %
 %Computes a new proposed vector using the hybrid Monte Carlo algorithm and
 %accepts it or rejects it according to the Hamiltonian provided
@@ -26,6 +26,7 @@ function [out,accept] = HMC(U,grad_U,dt_min,dt_max,L,current_q)
 
 %compute the timestep to use in this HMC step
 dt = dt_min + (dt_max-dt_min)*rand;
+L = round(L_min + (L_max - L_min)*rand);
 
 %record the current vector
 q = current_q;
@@ -63,15 +64,16 @@ current_K = sum(current_p.^2)/2;
 proposed_U = U(q);
 proposed_K = sum(p.^2)/2;
 
-fileID = fopen('hamiltonian.txt','a');
-% s1 = 'current_U';
-% s2 = 'current_K';
-% s3 = 'proposed_U';
-% s4 = 'proposed_K';
-% s5 = 'rand';
-% s6 = 'H';
-fprintf(fileID,'%12.8f\r\n', current_U, current_K, proposed_U, proposed_K, rand, exp(current_U-proposed_U+current_K-proposed_K));
-fclose(fileID);
+%saves the values of the hamiltonians at each step to a text file
+% fileID = fopen('hamiltonian.txt','a');
+% % s1 = 'current_U';
+% % s2 = 'current_K';
+% % s3 = 'proposed_U';
+% % s4 = 'proposed_K';
+% % s5 = 'rand';
+% % s6 = 'H';
+% fprintf(fileID,'%12.8f\r\n', current_U, current_K, proposed_U, proposed_K, rand, exp(current_U-proposed_U+current_K-proposed_K));
+% fclose(fileID);
 
 %accept or reject the state at the end based on this
 if rand < exp(current_U-proposed_U+current_K-proposed_K)

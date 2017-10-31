@@ -92,7 +92,7 @@ if (length(HMC_params.dt) ~= dt_num_lev) || (max(HMC_params.dt) == 0)
 end
 
 %number of HMC steps
-HMC_params.L = round(4.75./HMC_params.dt);
+HMC_params.L = round(5./HMC_params.dt);
 
 
 
