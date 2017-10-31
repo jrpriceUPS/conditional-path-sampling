@@ -20,10 +20,10 @@ k=5;
 %standard quartic SDE drift and derivative of drift
 %f = -grad(U), where U is the potential energy landscape
 %here the input x is a row vector of length 2
-%U     = @(x) -2*k*x(1).^2 + x(2).^2 + (x(1).^2).*(x(2).^2) + k*(x(1).^4) + x(2).^4;
-f{1}  = @(x) [4*k*x(1) - 2*x(1).*(x(2).^2) - 4*k*(x(1).^3), -2*x(2) - 2*(x(1).^2).*x(2) - 4*(x(2).^3)];
-df{1} = @(x) [4*k - 2*(x(2).^2) - 12*k*(x(1).^2), -4*(x(1).*x(2));
-              -4*(x(1).*x(2)), -2 - 2*(x(1).^2) - 12*(x(2).^2)]; % negative Hessian of U
+U     = @(x) -2*k*x(1)^2 + x(2)^2 + (x(1)^2)*(x(2)^2) + k*(x(1)^4) + x(2)^4;
+f{1}  = @(x) [4*k*x(1) - 2*x(1)*(x(2)^2) - 4*k*(x(1)^3), -2*x(2) - 2*(x(1)^2)*x(2) - 4*(x(2)^3)];
+df{1} = @(x) [4*k - 2*(x(2)^2) - 12*k*(x(1)^2), -4*x(1)*x(2);
+              -4*x(1)*x(2), -2 - 2*(x(1)^2) - 12*(x(2)^2)]; % negative Hessian of U
 
 drifts.f = f;
 drifts.df = df;
@@ -34,7 +34,7 @@ drifts.df = df;
 %%%%%%%%%%%%%%%%%%%
 
 %time step
-domain.dt       =  1/300;  %timestep (resolution)
+domain.dt       =  2^-7;  %timestep (resolution)
 domain.endtime  =  1;      %end of simulation
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,17 +71,23 @@ for i = 1:(T/dt)
     
 end
 
-%prints the initial path
-%initial_path
-
-%plotting the free energy landscape (heatmap)
+%plotting the free energy landscape
 [X,Y] = meshgrid(-2:.1:2);                                
 Z = @(a) -2*a*(X.^2) + (Y.^2) + (X.^2).*(Y.^2) + a*(X.^4) + Y.^4;
 surf(X,Y,Z(k))
-view(2)
+% view(2) %for a top down view
 
 hold on
 
-%plotting the initial path
-plot(initial_path(:,1)', initial_path(:,2)', 'r')
-axis([-2,2,-2,2])
+%plotting the initial path in 2D (projection onto the plane z = 0)
+% plot(initial_path(:,1)', initial_path(:,2)', 'r')
+% axis([-2,2,-2,2])
+
+%plotting the initial path in 3D
+z = zeros(1,length(t)); %height of the path at each point
+for i = 1:length(t)
+    z(i) = U([initial_path(i,1), initial_path(i,2)]);
+end
+
+plot3(initial_path(:,1)', initial_path(:,2)', z, 'r')
+axis([-2,2,-2,2,-1*k - 1,5,0,5]);
