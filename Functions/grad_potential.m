@@ -18,7 +18,7 @@ n = length(path);
 dU = zeros(n,1);
 
 %compute the gradient of the first point (see May note)
-dU(1) = -(path(2)-(path(1)+path(1)*dt))/(noise_level^2*dt).*(1+df(path(1))*dt) + start_dist(path(1));
+dU(1) = -(path(2)-(path(1)+f(path(1))*dt))/(noise_level^2*dt).*(1+df(path(1))*dt) + start_dist(path(1));
 
 %compute the intermediate gradients (see May note)
 dU(2:n-1) = (path(2:n-1)-(path(1:n-2)+f(path(1:n-2))*dt))/(noise_level^2*dt)...
