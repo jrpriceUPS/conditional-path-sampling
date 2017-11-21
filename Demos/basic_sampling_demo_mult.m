@@ -11,7 +11,7 @@ n = 2;
 %%%%%%%%%%%%%%%%
 
 %degree of Brownian noise
-SDE.noise = 1/2;
+SDE.noise = 1;
 
 
 %%%%%%%%%%%%%
@@ -19,7 +19,7 @@ SDE.noise = 1/2;
 %%%%%%%%%%%%%
 
 %depth of wells
-k = 5;
+k = 1;
 
 %standard quartic SDE drift and derivative of drift
 %f = -grad(U), where U is the potential energy landscape
@@ -58,15 +58,15 @@ cond.std        = [.01 .01];
 %negative log of a multivariate normal distribution
 %this part needs to be optimized
 cond.start_neg_log    =  @(x) (x - cond.mean(1,:))*inv(cond.cov_start)*(x - cond.mean(1,:)).'/2;
-cond.end_neg_log      =  @(x) (x - cond.mean(1,:))*inv(cond.cov_end)*(x - cond.mean(1,:)).'/2;
+cond.end_neg_log      =  @(x) (x - cond.mean(2,:))*inv(cond.cov_end)*(x - cond.mean(2,:)).'/2;
 cond.start_d_neg_log  =  @(x) (inv(cond.cov_start) + inv(cond.cov_start)')*(x - cond.mean(1,:)).'/2;
-cond.end_d_neg_log    =  @(x) (inv(cond.cov_end) + inv(cond.cov_end)')*(x - cond.mean(1,:)).'/2;
+cond.end_d_neg_log    =  @(x) (inv(cond.cov_end) + inv(cond.cov_end)')*(x - cond.mean(2,:)).'/2;
 
 %draw an initial position from the initial distribution
 cond.initial_pos = cond.mean(1,:) + cond.std(1)*randn(1,n);
 
 %number of samples
-cond.samples = 1000;
+cond.samples = 20;
 
 %how infrequently to save paths (use when handling large numbers of
 %possibly correlated data)
@@ -94,7 +94,7 @@ if ~HMC_params.dt
 end
 
 %number of time steps of HMC
-HMC_params.L  = 300;    %set to 0 for it to be automatically calculated
+HMC_params.L  = 0;    %set to 0 for it to be automatically calculated
 HMC_params.rnd_L = 0; %amount of randomness in selecting HMC_params.L (percentage)
 
 if ~HMC_params.L
@@ -119,3 +119,36 @@ plots.num_plotted  =  0;   %number of plots highlighted at end
 
 output = conditional_path_mult(SDE,drifts,cond,domain,HMC_params,plots,n);
 %output.accept_rate %prints accepte rate
+
+%%%%%%%%%%%%
+% plotting %
+%%%%%%%%%%%%
+
+%plotting the free energy landscape
+[X,Y] = meshgrid(-2:.1:2);                                
+Z = @(a) -2*a*(X.^2) + (Y.^2) + (X.^2).*(Y.^2) + a*(X.^4) + Y.^4;
+surf(X,Y,Z(k))
+% view(2) %for a top down view
+
+hold on
+
+%plotting the initial path in 2D (projection onto the plane z = 0)
+% plot(initial_path(:,1)', initial_path(:,2)', 'r')
+% axis([-2,2,-2,2])
+
+M = size(output.paths,1); %resolution
+num_paths = size(output.paths,3);
+
+z = zeros(num_paths,M); %height of the path at each point
+for i = 1:num_paths
+    for j = 1:M
+        z(i,j) = U(output.paths(j,:,i));
+    end
+end
+
+%plotting paths in 3D
+for i = 1:num_paths
+    plot3(output.paths(:,1,i), output.paths(:,2,i), z(i,:))
+    hold on
+end
+axis([-2,2,-2,2,-1*k - 1,5,0,5]);

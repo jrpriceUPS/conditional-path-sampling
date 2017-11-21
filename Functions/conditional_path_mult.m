@@ -7,7 +7,7 @@ sigma  =  SDE.noise;
 f    =  drifts.f;
 df   =  drifts.df;
 V    =  drifts.U; %free energy surface
-k    =  drifts.k; %depth of wells; for plotting the free energy surface
+%k    =  drifts.k; %depth of wells; for plotting the free energy surface
 
 %load information about the conditional start and end points
 start_obs_potential    =  cond.start_neg_log;
@@ -44,6 +44,7 @@ accept_rate = 0;
 
 %compute paths to be kept (according to gap) and initialize counter
 indices = burn+1:gap+1:samples;
+k = 1;
 
 %initialize the output containing the paths
 paths = zeros(M,n,length(indices)); %paths(x,y,z) gives the yth coordinate of the xth point on the zth path
