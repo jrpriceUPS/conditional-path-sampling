@@ -62,7 +62,8 @@ else
 
     for i = 1:(T/dt)
 
-        initial_path(i+1,:) = initial_path(i,:) + f{1}(initial_path(i,:))*dt + sigma*sqrt(dt)*randn(1,n);
+        %initial_path(i+1,:) = initial_path(i,:) + f{1}(initial_path(i,:))*dt + sigma*sqrt(dt)*randn(1,n);
+        initial_path(i+1,:) = initial_path(i,:) + f{1}(initial_path(i,:))*dt + sigma*sqrt(dt);
 
     end
 end
