@@ -19,8 +19,8 @@ k = 1;
 %f = -grad(U), where U is the potential energy landscape
 %the input x is a row vector of length n
 U     = @(x) -2*k*x(1)^2 + x(2)^2 + (x(1)^2)*(x(2)^2) + k*(x(1)^4) + x(2)^4;
-f{1}  = @(x) [4*k*x(1) - 2*x(1)*(x(2)^2) - 4*k*(x(1)^3), -2*x(2) - 2*(x(1)^2)*x(2) - 4*(x(2)^3)];
-df{1} = @(x) [4*k - 2*(x(2)^2) - 12*k*(x(1)^2), -4*x(1)*x(2);
+f  = @(x) [4*k*x(1) - 2*x(1)*(x(2)^2) - 4*k*(x(1)^3), -2*x(2) - 2*(x(1)^2)*x(2) - 4*(x(2)^3)];
+df = @(x) [4*k - 2*(x(2)^2) - 12*k*(x(1)^2), -4*x(1)*x(2);
               -4*x(1)*x(2), -2 - 2*(x(1)^2) - 12*(x(2)^2)]; % negative Hessian of U
 
 drifts.f = f;
